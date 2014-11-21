@@ -8,6 +8,7 @@ using namespace std;
 snapshot::snapshot(char *file) {
 	strcpy(fileName, file);
 	PF_CreateFile(fileName);
+	raidSystem = raid01(NUMBER_OF_DISKS);
 }
 
 void snapshot::processItem(workItem item) {
@@ -21,7 +22,7 @@ void snapshot::processItem(workItem item) {
 			PF_UnfixPage(fd, iter->second, FALSE);
 			PF_CloseFile(fd);
 		} else {
-			// TODO - Forward to RAID
+			raidSystem.execute_workItem(item);
 		}
 	} else if(item.operationKind) {
 		pageNumbers::iterator iter = pageNumbers.find(item.pageNumber)
@@ -33,7 +34,7 @@ void snapshot::processItem(workItem item) {
 			readItem.operationKind = READ;
 			readItem.buffer = buf;
 
-			// TODO - Forward to RAID
+			raidSystem.execute_workItem(readItem);
 
 			int pno;
 			char *page;
@@ -44,8 +45,8 @@ void snapshot::processItem(workItem item) {
 			PF_UnfixPage(fd, pno, TRUE);
 			PF_CloseFile(fd);
 		}
-		// TODO - Forward to RAID
+		raidSystem.execute_workItem(item);
 	} else {
-		// TODO - Forward to RAID
+		raidSystem.execute_workItem(item);
 	}
 }
