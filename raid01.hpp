@@ -1,14 +1,18 @@
 #include<queue>
 #include "workload.hpp"
 using namespace std;
-#ifndef _RAID01_HPP
-#define _RAID01_HPP
+#ifndef RAID01_HPP
+#define RAID01_HPP
 class raid01{
-	queue<work_item> myqueue;
+	int n_disk;
+	queue<workItem> myqueue;
+	bool* available;
 	int seek_num;
 	int write_num;
 	int read_num;
 	public:
-	void add_work_item(work_item w);
-	void execute_work_item(work_item w);
+	raid01(int n);
+	void add_workItem(workItem w);
+	void execute_workItem(workItem w);
 }
+#endif
