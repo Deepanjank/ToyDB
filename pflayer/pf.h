@@ -1,6 +1,10 @@
 /* pf.h: externs and error codes for Paged File Interface*/
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef TRUE
-#define TRUE 1		
+#define TRUE 1
 #endif
 #ifndef FALSE
 #define FALSE 0
@@ -37,7 +41,10 @@
 /* externs from the PF layer */
 extern int PFerrno;		/* error number of last error */
 extern void PF_Init();
+
+#ifndef __cplusplus
 extern void PF_PrintError();
+#endif
 
 int PF_CreateFile(char *fname);
 
@@ -58,3 +65,7 @@ int PF_DisposePage(int fd, int pagenum);
 int PF_UnfixPage(int fd, int pagenum, int dirty);
 
 void PF_PrintError(char *s);
+
+#ifdef __cplusplus
+}
+#endif

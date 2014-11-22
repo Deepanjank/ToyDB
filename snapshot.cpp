@@ -5,15 +5,15 @@
 
 using namespace std;
 
-snapshot::snapshot(char *file) {
+snapshot::snapshot(char *file) : raidSystem(NUMBER_OF_DISKS) {
 	strcpy(fileName, file);
 	PF_CreateFile(fileName);
-	raidSystem = raid01(NUMBER_OF_DISKS);
+	cout<<"Snapshot created at "<<fileName<<endl;
 }
 
 void snapshot::processItem(workItem item) {
 	if(item.type) {
-		pageNumbers::iterator iter = pageNumbers.find(item.pageNumber)
+		map<int, int>::iterator iter = pageNumbers.find(item.pageNumber);
 		if(iter != pageNumbers.end()) {
 			char *page;
 			int fd = PF_OpenFile(fileName);
@@ -25,7 +25,7 @@ void snapshot::processItem(workItem item) {
 			raidSystem.execute_workItem(item);
 		}
 	} else if(item.operationKind) {
-		pageNumbers::iterator iter = pageNumbers.find(item.pageNumber)
+		map<int, int>::iterator iter = pageNumbers.find(item.pageNumber);
 		if(iter == pageNumbers.end()) {
 			workItem readItem;
 			char buf[PF_PAGE_SIZE];

@@ -47,12 +47,12 @@ char *fname;		/* file name to find */
 /****************************************************************************
 SPECIFICATIONS:
 	Find the index to PFftab[] entry whose "fname" field is the
-	same as "fname". 
+	same as "fname".
 
 AUTHOR: clc
 
 RETURN VALUE:
-	The desired index, or 
+	The desired index, or
 	-1	if not found
 
 *****************************************************************************/
@@ -278,7 +278,7 @@ char *fname;		/* name of the file to open */
 /****************************************************************************
 SPECIFICATIONS:
 	Open the paged file whose name is fname.  It is possible to open
-	a file more than once. Warning: Openinging a file more than once for 
+	a file more than once. Warning: Openinging a file more than once for
 	write operations is not prevented. The possible consequence is
 	the corruption of the file structure, which will crash
 	the Paged File functions. On the other hand, opening a file
@@ -360,7 +360,7 @@ int error;
 		PFerrno = PFE_FD;
 		return(PFerrno);
 	}
-	
+
 
 	/* Flush all buffers for this file */
 	if ( (error=PFbufReleaseFile(fd,PFwritefcn)) != PFE_OK)
@@ -387,7 +387,7 @@ int error;
 	}
 
 
-		
+
 	/* close the file */
 	if ((error=close(PFftab[fd].unixfd))== -1){
 		PFerrno = PFE_UNIX;
@@ -436,9 +436,9 @@ char **pagebuf;	/* pointer to pointer to buffer of page data */
 SPECIFICATIONS:
 	Read the next valid page after *pagenum, the current page number,
 	and set *pagebuf to point to the page data. Set *pagenum
-	to be the new page number. The new page is fixed in memory 
+	to be the new page number. The new page is fixed in memory
 	until PFunfix() is called.
-	Note that PF_GetNextPage() with *pagenum == -1 will return the 
+	Note that PF_GetNextPage() with *pagenum == -1 will return the
 	first valid page. PFgetFirst() is just a short hand for this.
 
 AUTHOR: clc
@@ -446,7 +446,7 @@ AUTHOR: clc
 RETURN VALUE:
 	PFE_OK	if success
 	PFE_EOF	if end of file reached without encountering
-		any used page data. 
+		any used page data.
 	PFE_INVALIDPAGE  if page number is invalid.
 	other PF errors code for other error.
 
@@ -552,7 +552,7 @@ char **pagebuf;	/* pointer to pointer to page buffer*/
 /****************************************************************************
 SPECIFICATIONS:
 	Allocate a new, empty page for file "fd".
-	set *pagenum to the new page number. 
+	set *pagenum to the new page number.
 	Set *pagebuf to point to the buffer for that page.
 	The page allocated is fixed in the buffer.
 
@@ -588,7 +588,7 @@ int error;
 		if ((error=PFbufAlloc(fd,*pagenum,&fpage,PFwritefcn))!= PFE_OK)
 			/* can't allocate a page */
 			return(error);
-	
+
 		/* increment # of pages for this file */
 		PFftab[fd].hdr.numpages++;
 		PFftab[fd].hdrchanged = TRUE;
@@ -612,7 +612,7 @@ int error;
 
 	/* set return value */
 	*pagebuf = fpage->pagebuf;
-	
+
 	return(PFE_OK);
 }
 
@@ -648,7 +648,7 @@ int error;
 	if ((error=PFbufGet(fd,pagenum,&fpage,PFreadfcn,PFwritefcn))!= PFE_OK)
 		/* can't get this page */
 		return(error);
-	
+
 	if (fpage->nextfree != PF_PAGE_USED){
 		/* this page already freed */
 		if (PFbufUnfix(fd,pagenum,FALSE)!= PFE_OK){

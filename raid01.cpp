@@ -1,21 +1,23 @@
-#include "workload.hpp"
 #include "raid01.hpp"
 #include "pflayer/pf.h"
 
 #include <iostream>
+#include <cstdio>
 
 using namespace std;
 
-void raid01::raid01(int n) {
+raid01::raid01(int n) {
 	n_disk = n;
 	available = (bool *)malloc(2 * n * sizeof(bool));
 
-	for(int i=0; i<=2*n; i++) {
+	PF_Init();
+
+	for(int i=0; i<2*n; i++) {
 		available[i] = true;
 
-		char *fileName = "disk";
-		char *i_string;
-		itoa(i, i_string, 10);
+		char fileName[10] = "disk";
+		char i_string[5];
+		sprintf(i_string, "%d", i);
 		strcat(fileName, i_string);
 
 		PF_CreateFile(fileName);
@@ -29,26 +31,26 @@ void raid01::raid01(int n) {
 		}
 		PF_CloseFile(fd);
 	}
-	seek_num=0;
-	write_num=0;
-	read_num=0;
+	seek_num = 0;
+	write_num = 0;
+	read_num = 0;
 }
 
 void raid01::execute_workItem(workItem w) {
 	int disk_num = w.pageNumber % n_disk;
 	int page_num = w.pageNumber / n_disk;
 
-	char *fileName = "disk";
-	char *i_string;
-	itoa(disk_num, i_string, 10);
+	char fileName[10] = "disk";
+	char i_string[5];
+	sprintf(i_string, "%d", disk_num);
 	strcat(fileName, i_string);
 
-	char *fileName2 = "disk";
-	char *i_string2;
-	itoa(disk_num + n_disk, i_string2, 10);
+	char fileName2[10] = "disk";
+	char i_string2[5];
+	sprintf(i_string, "%d", disk_num + n_disk);
 	strcat(fileName2, i_string2);
 
-	if(w.operationKind) {
+	if(!w.operationKind) {
 		read_num += 1;
 
 		char *page;

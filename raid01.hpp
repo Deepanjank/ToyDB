@@ -2,11 +2,12 @@
 #define RAID01_HPP
 
 #include <queue>
-#include "workload.hpp"
+#include "workItem.hpp"
 
 #define DISK_CAPACITY 50
 
 class raid01 {
+private:
 	int n_disk;
 	std::queue<workItem> myqueue;
 	bool *available;

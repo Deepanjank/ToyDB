@@ -9,6 +9,7 @@
 #define NUMBER_OF_DISKS 4
 
 class snapshot {
+public:
 	snapshot(char *file);
 	void processItem(workItem item);
 private:
