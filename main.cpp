@@ -17,7 +17,6 @@ void exec()
 	for(int i=0; i<N; i++) {
 		cin>>item.type>>item.operationKind>>item.pageNumber>>item.timestamp;
 		ss.processItem(item);
-		cout<<2+i<<endl;
 	}
 }
 

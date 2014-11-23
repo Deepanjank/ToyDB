@@ -38,7 +38,6 @@ void snapshot::processItem(workItem item) {
 	} else if(item.operationKind) {
 		map<int, int>::iterator iter = pageNumbers.find(item.pageNumber);
 		if(iter == pageNumbers.end()) {
-			cout<<"YO";
 			workItem readItem;
 			char buf[PF_PAGE_SIZE];
 
@@ -51,7 +50,7 @@ void snapshot::processItem(workItem item) {
 			int pno;
 			char *page;
 			int fd = PF_OpenFile(fileName);
-			cout<<PF_AllocPage(fd, &pno, &page);
+			PF_AllocPage(fd, &pno, &page);
 			memcpy(page, buf, PF_PAGE_SIZE);
 			pageNumbers[item.pageNumber] = pno;
 			PF_UnfixPage(fd, pno, TRUE);

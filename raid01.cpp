@@ -9,8 +9,6 @@
 
 using namespace std;
 
-bool first=true;
-
 raid01::raid01(int n) {
 	n_disk = n;
 	available = (bool *)malloc(2 * n * sizeof(bool));
@@ -27,6 +25,7 @@ raid01::raid01(int n) {
 
 		PF_DestroyFile(fileName);
 		PF_CreateFile(fileName);
+		cout<<"Disk created at "<<fileName<<endl;
 		int fd = PF_OpenFile(fileName);
 		for(int j=0; j<DISK_CAPACITY; j++) {
 			int pno;
@@ -80,18 +79,18 @@ void raid01::execute_workItem(workItem w) {
 
 		char *page;
 		int fd = PF_OpenFile(fileName);
-		cout<<"WGTP1"<<PF_GetThisPage(fd, page_num, &page);
+		PF_GetThisPage(fd, page_num, &page);
 		memcpy(page, w.buffer, PF_PAGE_SIZE);
 		PF_UnfixPage(fd, page_num, TRUE);
 		PF_CloseFile(fd);
 
+		char *page2;
 		int fd2 = PF_OpenFile(fileName2);
-		cout<<"WGTP2"<<PF_GetThisPage(fd2, page_num, &page);
-		memcpy(page, w.buffer, PF_PAGE_SIZE);
+		PF_GetThisPage(fd2, page_num, &page2);
+		memcpy(page2, w.buffer, PF_PAGE_SIZE);
 		PF_UnfixPage(fd2, page_num, TRUE);
 		PF_CloseFile(fd2);
 	}
-	cout<<"yo";
 }
 
 void raid01::add_workItem(workItem w) {
@@ -169,8 +168,8 @@ void raid01::add_workItem(workItem w) {
 
 		if(available[disk_num] && available[disk_num+n_disk]) {
 			myqueue.push(w);
-			available[w.pageNumber]=false;
-			available[w.pageNumber+n_disk]=false;
+			available[disk_num]=false;
+			available[disk_num+n_disk]=false;
 			previous[disk_num] = page_num;
 			previous[disk_num+n_disk] = page_num;
 		} else {
