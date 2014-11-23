@@ -30,8 +30,8 @@ void snapshot::processItem(workItem item) {
 			read_num2 += 1;
 			if(iter->second != previous + 1) {
 				seek_num2 += 1;
-				previous = iter->second;
 			}
+			previous = iter->second;
 		} else {
 			raidSystem.add_workItem(item);
 		}
@@ -59,8 +59,8 @@ void snapshot::processItem(workItem item) {
 			write_num2 += 1;
 			if(pno != previous + 1) {
 				seek_num2 += 1;
-				previous = pno;
 			}
+			previous = pno;
 		}
 		raidSystem.add_workItem(item);
 	} else {
