@@ -57,7 +57,10 @@ void snapshot::processItem(workItem item) {
 			PF_CloseFile(fd);
 
 			write_num2 += 1;
-			previous = pno;
+			if(pno != previous + 1) {
+				seek_num2 += 1;
+				previous = pno;
+			}
 		}
 		raidSystem.add_workItem(item);
 	} else {
