@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 
 #include "snapshot.hpp"
 #include "defs.hpp"
