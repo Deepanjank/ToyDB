@@ -5,17 +5,24 @@
 
 using namespace std;
 
-int main() {
+void exec()
+{
 	snapshot ss("snapshot");
 	workItem item;
 	char buf[4096];
 	int N;
 	item.buffer = buf;
 	cin>>N;
-	while(N--) {
+	while(N) {
 		cin>>item.type>>item.operationKind>>item.pageNumber>>item.timestamp;
 		ss.processItem(item);
+		cout<<402-N<<endl;
+		N--;
 	}
+}
+
+int main() {
+	exec();
 	cout<<"RAID system : "<<seek_num<<" seeks "<<read_num<<" reads "<<write_num<<" writes"<<endl;
 	cout<<"Snapshot : "<<seek_num2<<" seeks "<<read_num2<<" reads "<<write_num2<<" writes"<<endl;
 	cout<<"Time : "<<ttime<<endl;

@@ -14,6 +14,7 @@ private:
 	int *previous;
 public:
 	raid01(int n);
+	~raid01();
 	void add_workItem(workItem w);
 	void execute_workItem(workItem w);
 };

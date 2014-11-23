@@ -23,6 +23,7 @@ raid01::raid01(int n) {
 		sprintf(i_string, "%d", i);
 		strcat(fileName, i_string);
 
+		PF_DestroyFile(fileName);
 		PF_CreateFile(fileName);
 		int fd = PF_OpenFile(fileName);
 		for(int j=0; j<DISK_CAPACITY; j++) {
@@ -30,7 +31,6 @@ raid01::raid01(int n) {
 			char *page;
 			PF_AllocPage(fd, &pno, &page);
 			PF_UnfixPage(fd, pno, TRUE);
-
 		}
 		PF_CloseFile(fd);
 	}
@@ -38,6 +38,15 @@ raid01::raid01(int n) {
 	write_num = 0;
 	read_num = 0;
 	ttime=0;
+}
+
+raid01::~raid01() {
+	delete available;
+	delete previous;
+	if(!myqueue.empty()) {
+		seek_num++;
+		ttime++;
+	}
 }
 
 void raid01::execute_workItem(workItem w) {
@@ -83,12 +92,6 @@ void raid01::execute_workItem(workItem w) {
 
 void raid01::add_workItem(workItem w) {
 	execute_workItem(w);
-
-	if(first) {
-		first = false;
-		ttime+=1;
-		seek_num+=1;
-	}
 
 	int disk_num = w.pageNumber % n_disk;
 	int page_num = w.pageNumber / n_disk;

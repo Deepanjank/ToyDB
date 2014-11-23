@@ -9,6 +9,7 @@ using namespace std;
 snapshot::snapshot(char *file) : raidSystem(NUMBER_OF_DISKS) {
 	strcpy(fileName, file);
 	previous=0;
+	PF_DestroyFile(fileName);
 	PF_CreateFile(fileName);
 	cout<<"Snapshot created at "<<fileName<<endl;
 }
@@ -35,6 +36,7 @@ void snapshot::processItem(workItem item) {
 	} else if(item.operationKind) {
 		map<int, int>::iterator iter = pageNumbers.find(item.pageNumber);
 		if(iter == pageNumbers.end()) {
+			cout<<"YO";
 			workItem readItem;
 			char buf[PF_PAGE_SIZE];
 
