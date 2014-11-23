@@ -7,17 +7,17 @@ using namespace std;
 
 void exec()
 {
-	snapshot ss("snapshot");
+	char filename[] = "snapshot";
+	snapshot ss(filename);
 	workItem item;
 	char buf[4096];
 	int N;
 	item.buffer = buf;
 	cin>>N;
-	while(N) {
+	for(int i=0; i<N; i++) {
 		cin>>item.type>>item.operationKind>>item.pageNumber>>item.timestamp;
 		ss.processItem(item);
-		cout<<402-N<<endl;
-		N--;
+		cout<<2+i<<endl;
 	}
 }
 

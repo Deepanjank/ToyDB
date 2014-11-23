@@ -1,4 +1,4 @@
-all: clean
+all:
 	# cd pflayer && make
 	g++ -c -x c pflayer/pf.c pflayer/buf.c pflayer/hash.c
 	g++ -c main.cpp snapshot.cpp raid01.cpp defs.cpp -I. -I./pflayer/

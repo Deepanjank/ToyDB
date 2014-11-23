@@ -49,7 +49,7 @@ void snapshot::processItem(workItem item) {
 			int pno;
 			char *page;
 			int fd = PF_OpenFile(fileName);
-			PF_AllocPage(fd, &pno, &page);
+			cout<<PF_AllocPage(fd, &pno, &page);
 			memcpy(page, buf, PF_PAGE_SIZE);
 			pageNumbers[item.pageNumber] = pno;
 			PF_UnfixPage(fd, pno, TRUE);

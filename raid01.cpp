@@ -41,8 +41,9 @@ raid01::raid01(int n) {
 }
 
 raid01::~raid01() {
-	delete available;
-	delete previous;
+	free(available);
+	free(previous);
+
 	if(!myqueue.empty()) {
 		seek_num++;
 		ttime++;
@@ -60,7 +61,7 @@ void raid01::execute_workItem(workItem w) {
 
 	char fileName2[10] = "disk";
 	char i_string2[5];
-	sprintf(i_string, "%d", disk_num + n_disk);
+	sprintf(i_string2, "%d", disk_num + n_disk);
 	strcat(fileName2, i_string2);
 
 	if(!w.operationKind) {
@@ -77,17 +78,18 @@ void raid01::execute_workItem(workItem w) {
 
 		char *page;
 		int fd = PF_OpenFile(fileName);
-		PF_GetThisPage(fd, page_num, &page);
+		cout<<"WGTP1"<<PF_GetThisPage(fd, page_num, &page);
 		memcpy(page, w.buffer, PF_PAGE_SIZE);
 		PF_UnfixPage(fd, page_num, TRUE);
 		PF_CloseFile(fd);
 
-		fd = PF_OpenFile(fileName2);
-		PF_GetThisPage(fd, page_num, &page);
+		int fd2 = PF_OpenFile(fileName2);
+		cout<<"WGTP2"<<PF_GetThisPage(fd2, page_num, &page);
 		memcpy(page, w.buffer, PF_PAGE_SIZE);
-		PF_UnfixPage(fd, page_num, TRUE);
-		PF_CloseFile(fd);
+		PF_UnfixPage(fd2, page_num, TRUE);
+		PF_CloseFile(fd2);
 	}
+	cout<<"yo";
 }
 
 void raid01::add_workItem(workItem w) {
