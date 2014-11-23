@@ -9,12 +9,12 @@ using namespace std;
 raid01::raid01(int n) {
 	n_disk = n;
 	available = (bool *)malloc(2 * n * sizeof(bool));
-
+	previous = (int *)malloc(2 * n * sizeof(int));
 	PF_Init();
 
 	for(int i=0; i<2*n; i++) {
 		available[i] = true;
-
+		previous[i] = 0;
 		char fileName[10] = "disk";
 		char i_string[5];
 		sprintf(i_string, "%d", i);
@@ -81,14 +81,25 @@ void raid01::add_workItem(workItem w) {
 	execute_workItem(w);
 
 	int disk_num = w.pageNumber % n_disk;
-
+	int page_num = w.pageNumber / n_disk;
 	if(!w.operationKind) {
+		if(previous[disk_num] == page_num || previous[disk_num]-1 == page_num || previous[disk_num]+1 == page_num){
+			previous[disk_num] = page_num;
+			return;
+		}
+		else if(previous[disk_num+n_disk] == page_num || previous[disk_num+n_disk]-1 == page_num || previous[disk_num+n_disk]+1 == page_num){
+                        previous[disk_num+n_disk] = page_num;
+			return;
+                }
+
 		if(available[disk_num]) {
 			myqueue.push(w);
 			available[disk_num]=false;
+			previous[disk_num] = page_num;
 		} else if(available[disk_num+n_disk]) {
 			myqueue.push(w);
 			available[disk_num+n_disk]=false;
+			previous[disk_num+n_disk]=page_num;
 		} else {
 			while (!myqueue.empty())
 				myqueue.pop();
@@ -97,12 +108,22 @@ void raid01::add_workItem(workItem w) {
 			seek_num += 1;
 			myqueue.push(w);
 			available[disk_num] = false;
+			previous[disk_num] = page_num;
 		}
 	} else {
+		if((previous[disk_num] == page_num || previous[disk_num]-1 == page_num || previous[disk_num]+1 == page_num)  &&
+                (previous[disk_num+n_disk] == page_num || previous[disk_num+n_disk]-1 == page_num || previous[disk_num+n_disk]+1 == page_num))
+                        previous[disk_num+n_disk] = page_num;
+                        previous[disk_num] = page_num;
+			return;
+                }
+
 		if(available[disk_num] && available[disk_num+n_disk]) {
 			myqueue.push(w);
 			available[w.pageNumber]=false;
 			available[w.pageNumber+n_disk]=false;
+			previous[disk_num] = page_num;
+			previous[disk_num+n_disk] = page_num;
 		} else {
 			while (!myqueue.empty())
 				myqueue.pop();
@@ -111,6 +132,8 @@ void raid01::add_workItem(workItem w) {
 			seek_num += 1;
 			myqueue.push(w);
 			available[disk_num] = available[disk_num+n_disk] = false;
+			previous[disk_num+n_disk] = page_num;
+			previous[disk_num] = page_num;
 		}
 	}
 }
