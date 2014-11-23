@@ -1,12 +1,14 @@
 #include <iostream>
 
 #include "snapshot.hpp"
+#include "defs.hpp"
 #include "pflayer/pf.h"
 
 using namespace std;
 
 snapshot::snapshot(char *file) : raidSystem(NUMBER_OF_DISKS) {
 	strcpy(fileName, file);
+	previous=0;
 	PF_CreateFile(fileName);
 	cout<<"Snapshot created at "<<fileName<<endl;
 }
@@ -21,8 +23,14 @@ void snapshot::processItem(workItem item) {
 			memcpy(item.buffer, page, PF_PAGE_SIZE);
 			PF_UnfixPage(fd, iter->second, FALSE);
 			PF_CloseFile(fd);
+
+			read_num2 += 1;
+			if(iter->second != previous + 1) {
+				seek_num2 += 1;
+				previous = iter->second;
+			}
 		} else {
-			raidSystem.execute_workItem(item);
+			raidSystem.add_workItem(item);
 		}
 	} else if(item.operationKind) {
 		map<int, int>::iterator iter = pageNumbers.find(item.pageNumber);
@@ -34,7 +42,7 @@ void snapshot::processItem(workItem item) {
 			readItem.operationKind = READ;
 			readItem.buffer = buf;
 
-			raidSystem.execute_workItem(readItem);
+			raidSystem.add_workItem(readItem);
 
 			int pno;
 			char *page;
@@ -44,9 +52,12 @@ void snapshot::processItem(workItem item) {
 			pageNumbers[item.pageNumber] = pno;
 			PF_UnfixPage(fd, pno, TRUE);
 			PF_CloseFile(fd);
+
+			write_num2 += 1;
+			previous = pno;
 		}
-		raidSystem.execute_workItem(item);
+		raidSystem.add_workItem(item);
 	} else {
-		raidSystem.execute_workItem(item);
+		raidSystem.add_workItem(item);
 	}
 }

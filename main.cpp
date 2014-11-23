@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "snapshot.hpp"
+#include "defs.hpp"
 
 using namespace std;
 
@@ -8,17 +9,15 @@ int main() {
 	snapshot ss("snapshot");
 	workItem item;
 	char buf[4096];
-	cout<<sizeof(char);
-	for (int i = 0; i < 4096; ++i)
-	{
-		buf[i] = '0' + (i%10);
-		printf("%c", buf[i]);
-	}
-
+	int N;
 	item.buffer = buf;
-	while(1) {
-		cin>>item.type>>item.operationKind>>item.pageNumber;
+	cin>>N;
+	while(N--) {
+		cin>>item.type>>item.operationKind>>item.pageNumber>>item.timestamp;
 		ss.processItem(item);
 	}
+	cout<<"RAID system : "<<seek_num<<" seeks "<<read_num<<" reads "<<write_num<<" writes"<<endl;
+	cout<<"Snapshot : "<<seek_num2<<" seeks "<<read_num2<<" reads "<<write_num2<<" writes"<<endl;
+	cout<<"Time : "<<ttime<<endl;
 	return 0;
 }

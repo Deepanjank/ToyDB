@@ -13,6 +13,7 @@ public:
 	snapshot(char *file);
 	void processItem(workItem item);
 private:
+	int previous;
 	raid01 raidSystem;
 	char fileName[25];
 	std::map<int, int> pageNumbers;

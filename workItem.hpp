@@ -13,6 +13,7 @@ struct workItem
 	bool operationKind;
 	int pageNumber;
 	char *buffer;
+	int timestamp;
 };
 
 #endif // WORKITEM_HPP

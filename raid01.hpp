@@ -12,9 +12,6 @@ private:
 	std::queue<workItem> myqueue;
 	bool *available;
 	int *previous;
-	int seek_num;
-	int write_num;
-	int read_num;
 public:
 	raid01(int n);
 	void add_workItem(workItem w);

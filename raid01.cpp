@@ -1,10 +1,13 @@
 #include "raid01.hpp"
 #include "pflayer/pf.h"
+#include "defs.hpp"
 
 #include <iostream>
 #include <cstdio>
 
 using namespace std;
+
+bool first=true;
 
 raid01::raid01(int n) {
 	n_disk = n;
@@ -34,6 +37,7 @@ raid01::raid01(int n) {
 	seek_num = 0;
 	write_num = 0;
 	read_num = 0;
+	ttime=0;
 }
 
 void raid01::execute_workItem(workItem w) {
@@ -60,7 +64,7 @@ void raid01::execute_workItem(workItem w) {
 		PF_UnfixPage(fd, page_num, FALSE);
 		PF_CloseFile(fd);
 	} else {
-		write_num += 1;
+		write_num += 2;
 
 		char *page;
 		int fd = PF_OpenFile(fileName);
@@ -80,17 +84,38 @@ void raid01::execute_workItem(workItem w) {
 void raid01::add_workItem(workItem w) {
 	execute_workItem(w);
 
+	if(first) {
+		first = false;
+		ttime+=1;
+		seek_num+=1;
+	}
+
 	int disk_num = w.pageNumber % n_disk;
 	int page_num = w.pageNumber / n_disk;
 	if(!w.operationKind) {
-		if(previous[disk_num] == page_num || previous[disk_num]-1 == page_num || previous[disk_num]+1 == page_num){
+		if(w.timestamp > ttime) {
+			while (!myqueue.empty())
+				myqueue.pop();
+			for (int i = 0; i < 2*n_disk; ++i)
+				available[i] = true;
+
+			seek_num += 1;
+			ttime = w.timestamp;
+			myqueue.push(w);
+			available[disk_num] = false;
+			previous[disk_num] = page_num;
+
+			return;
+		}
+
+		if(previous[disk_num]+1 == page_num) {
 			previous[disk_num] = page_num;
 			return;
 		}
-		else if(previous[disk_num+n_disk] == page_num || previous[disk_num+n_disk]-1 == page_num || previous[disk_num+n_disk]+1 == page_num){
-                        previous[disk_num+n_disk] = page_num;
+		else if(previous[disk_num+n_disk]+1 == page_num){
+			previous[disk_num+n_disk] = page_num;
 			return;
-                }
+		}
 
 		if(available[disk_num]) {
 			myqueue.push(w);
@@ -105,18 +130,35 @@ void raid01::add_workItem(workItem w) {
 				myqueue.pop();
 			for (int i = 0; i < 2*n_disk; ++i)
 				available[i] = true;
+
 			seek_num += 1;
+			ttime += 1;
 			myqueue.push(w);
 			available[disk_num] = false;
 			previous[disk_num] = page_num;
 		}
 	} else {
-		if((previous[disk_num] == page_num || previous[disk_num]-1 == page_num || previous[disk_num]+1 == page_num)  &&
-                (previous[disk_num+n_disk] == page_num || previous[disk_num+n_disk]-1 == page_num || previous[disk_num+n_disk]+1 == page_num))
-                        previous[disk_num+n_disk] = page_num;
-                        previous[disk_num] = page_num;
+		if(w.timestamp > ttime) {
+			while (!myqueue.empty())
+				myqueue.pop();
+			for (int i = 0; i < 2*n_disk; ++i)
+				available[i] = true;
+
+			seek_num += int(previous[disk_num]+1 == page_num) + int(previous[disk_num+n_disk]+1 == page_num);
+			myqueue.push(w);
+			ttime = w.timestamp;
+			available[disk_num] = available[disk_num+n_disk] = false;
+			previous[disk_num+n_disk] = page_num;
+			previous[disk_num] = page_num;
+
 			return;
-                }
+		}
+
+		if(previous[disk_num]+1 == page_num && previous[disk_num+n_disk]+1 == page_num) {
+			previous[disk_num+n_disk] = page_num;
+			previous[disk_num] = page_num;
+			return;
+		}
 
 		if(available[disk_num] && available[disk_num+n_disk]) {
 			myqueue.push(w);
@@ -129,7 +171,9 @@ void raid01::add_workItem(workItem w) {
 				myqueue.pop();
 			for (int i = 0; i < 2*n_disk; ++i)
 				available[i] = true;
-			seek_num += 1;
+
+			seek_num += int(previous[disk_num]+1 == page_num) + int(previous[disk_num+n_disk]+1 == page_num);
+			ttime += 1;
 			myqueue.push(w);
 			available[disk_num] = available[disk_num+n_disk] = false;
 			previous[disk_num+n_disk] = page_num;
