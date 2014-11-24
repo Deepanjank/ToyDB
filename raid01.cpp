@@ -105,13 +105,7 @@ void raid01::add_workItem(workItem w) {
 			for (int i = 0; i < 2*n_disk; ++i)
 				available[i] = true;
 
-			seek_num += 1;
 			ttime = w.timestamp;
-			myqueue.push(w);
-			available[disk_num] = false;
-			previous[disk_num] = page_num;
-
-			return;
 		}
 
 		if(previous[disk_num]+1 == page_num) {
@@ -150,14 +144,7 @@ void raid01::add_workItem(workItem w) {
 			for (int i = 0; i < 2*n_disk; ++i)
 				available[i] = true;
 
-			seek_num += 1;
-			myqueue.push(w);
 			ttime = w.timestamp;
-			available[disk_num] = available[disk_num+n_disk] = false;
-			previous[disk_num+n_disk] = page_num;
-			previous[disk_num] = page_num;
-
-			return;
 		}
 
 		if(previous[disk_num]+1 == page_num && previous[disk_num+n_disk]+1 == page_num) {
