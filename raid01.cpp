@@ -17,7 +17,7 @@ raid01::raid01(int n) {
 
 	for(int i=0; i<2*n; i++) {
 		available[i] = true;
-		previous[i] = 0;
+		previous[i] = -1;
 		char fileName[10] = "disk";
 		char i_string[5];
 		sprintf(i_string, "%d", i);
