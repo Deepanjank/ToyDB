@@ -10,6 +10,7 @@
 
 class snapshot {
 public:
+	bool enable;
 	snapshot(char *file);
 	void processItem(workItem item);
 private:
