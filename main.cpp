@@ -9,7 +9,7 @@ void exec()
 {
 	char filename[] = "snapshot";
 	snapshot ss(filename);
-	ss.enable = true;
+	ss.enable = false;
 	workItem item;
 	char buf[4096];
 	int N;

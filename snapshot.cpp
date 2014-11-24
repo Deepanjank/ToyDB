@@ -10,7 +10,7 @@ using namespace std;
 
 snapshot::snapshot(char *file) : raidSystem(NUMBER_OF_DISKS) {
 	strcpy(fileName, file);
-	previous=0;
+	previous=-1;
 	PF_DestroyFile(fileName);
 	PF_CreateFile(fileName);
 	cout<<"Snapshot created at "<<fileName<<endl;
